@@ -52,7 +52,7 @@ obj:
 
 # GLFW
 $(GLFW_LIB_PATH): $(GLFW_CMAKELIST)
-	@cd $(GLFW_LIB_DIR) && $(CMAKE) && $(MAKE)
+	@cd $(GLFW_LIB_DIR) && $(CMAKE) . && $(MAKE)
 
 $(GLFW_CMAKELIST):
 	@git submodule init
