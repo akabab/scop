@@ -39,7 +39,7 @@ OK				=	$(C_OK)OK$(C_NO)
 
 all: $(NAME)
 
-$(NAME): $(OBJS) $(GLFW_LIB_PATH)  
+$(NAME): $(GLFW_LIB_PATH) $(OBJS) 
 	@$(CC) -o $@ $(OBJS) $(INCLUDE_OPTS) -L $(GLFW_LIB_DIR)/src -lglfw3 $(FRAMEWORK_OPTS)
 	@echo "Compiling" [ $@ ] $(SUCCESS)
 
