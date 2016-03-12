@@ -3,7 +3,8 @@ NAME				=	scop
 FLAGS				=	-Werror -Wextra -Wall
 
 INC					=	./inc
-SRC					=	main.c
+SRC					=	main.c					\
+						glfw_handler.c
 SRCS				=	$(patsubst %, src/%, $(SRC))
 OBJS				=	$(SRCS:src/%.c=obj/%.o)
 
@@ -14,45 +15,57 @@ BREW_INCLUDE		=	$(BREW)/include
 MAKE				=	make
 CMAKE				=	cmake
 
-# GLFW
-GLFW_LIB_DIR		=	glfw
-GLFW_LIB			=	libglfw3.a
-GLFW_LIB_PATH		=	$(GLFW_LIB_DIR)/src/$(GLFW_LIB)
-GLFW_CMAKELIST		=	$(GLFW_LIB_DIR)/CMakeLists.txt
+# LIBFT
+LIBFT_DIR			=	libft
+LIBFT_PATH			=	$(LIBFT_DIR)/libft.a
+LIBFT_INC			=	$(LIBFT_DIR)/includes
 
-FRAMEWORKS			=	Cocoa OpenGL IOKit CoreVideo GLUT
+# GLFW
+GLFW_DIR			=	glfw
+GLFW_LIB			=	libglfw3.a
+GLFW_LIB_DIR		=	$(GLFW_DIR)/src
+GLFW_LIB_PATH		=	$(GLFW_LIB_DIR)/$(GLFW_LIB)
+GLFW_CMAKELIST		=	$(GLFW_DIR)/CMakeLists.txt
+GLFW_INC			=	$(GLFW_DIR)/include/GLFW
+GLFW_OPTS			=	# -DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF
+
+FRAMEWORKS			=	Cocoa OpenGL IOKit CoreVideo Carbon GLUT
 FRAMEWORK_OPTS		=	$(addprefix -framework , $(FRAMEWORKS))
 
-INCLUDES			=	$(INC) $(GLFW_LIB_DIR)/include/GLFW
-INCLUDE_OPTS		=	$(addprefix -I , $(INCLUDES))	
+INCLUDES			=	$(INC) $(LIBFT_INC) $(GLFW_INC)
+INCLUDE_OPTS		=	$(addprefix -I , $(INCLUDES))
 
 # COLORS
-C_NO			=	"\033[00m"
-C_OK			=	"\033[35m"
-C_GOOD			=	"\033[32m"
-C_ERROR			=	"\033[31m"
-C_WARN			=	"\033[33m"
+C_NO				=	"\033[00m"
+C_OK				=	"\033[35m"
+C_GOOD				=	"\033[32m"
+C_ERROR				=	"\033[31m"
+C_WARN				=	"\033[33m"
 
 # DBG MESSAGE
-SUCCESS			=	$(C_GOOD)SUCCESS$(C_NO)
-OK				=	$(C_OK)OK$(C_NO)
+SUCCESS				=	$(C_GOOD)SUCCESS$(C_NO)
+OK					=	$(C_OK)OK$(C_NO)
 
 all: $(NAME)
 
-$(NAME): $(GLFW_LIB_PATH) $(OBJS) 
-	@$(CC) -o $@ $(OBJS) $(INCLUDE_OPTS) -L $(GLFW_LIB_DIR)/src -lglfw3 $(FRAMEWORK_OPTS)
+$(NAME): $(LIBFT_PATH) $(GLFW_LIB_PATH) $(OBJS)
+	@$(CC) -o $@ $(OBJS) -L $(GLFW_LIB_DIR) -lglfw3 -L $(LIBFT_DIR) -lft $(FRAMEWORK_OPTS)
 	@echo "Compiling" [ $@ ] $(SUCCESS)
 
 obj/%.o: src/%.c obj
-	$(CC) -c -o $@ $< -I $(INC)
+	@$(CC) -c -o $@ $< $(INCLUDE_OPTS)
 	@echo "Linking" [ $< ] $(OK)
 
 obj:
 	@mkdir -p obj
 
-# GLFW
+# LIBRARIES
+
+$(LIBFT_PATH):
+	@$(MAKE) -C $(LIBFT_DIR)
+
 $(GLFW_LIB_PATH): $(GLFW_CMAKELIST)
-	@cd $(GLFW_LIB_DIR) && $(CMAKE) . && $(MAKE)
+	@cd $(GLFW_DIR) && $(CMAKE) $(GLFW_OPTS) . && $(MAKE)
 
 $(GLFW_CMAKELIST):
 	@git submodule init
@@ -68,8 +81,8 @@ fclean: clean
 	@echo "Delete" [ $(NAME) ] $(OK)
 
 ffclean: fclean
-	@$(MAKE) -C $(GLFW_LIB_DIR) clean
-	@echo "Clean" [ $(GLFW_LIB_DIR) ] $(OK)
+	@$(MAKE) -C $(GLFW_DIR) clean
+	@echo "Clean" [ $(GLFW_DIR) ] $(OK)
 
 re: fclean all
 
