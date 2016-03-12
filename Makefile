@@ -51,11 +51,11 @@ obj:
 	@mkdir -p obj
 
 # GLFW
-$(GLFW_LIB_PATH):
+$(GLFW_LIB_PATH): $(GLFW_CMAKELIST)
 	@$(CMAKE) $(GLFW_LIB_DIR) && \
 	@$(MAKE) -C $(GLFW_LIB_DIR)
 
-glfw/CMakeLists.txt:
+$(GLFW_CMAKELIST):
 	@git submodule init
 	@git submodule update
 
