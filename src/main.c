@@ -27,6 +27,18 @@ static void		render()
 	// gluDeleteQuadric(params);
 }
 
+void init(void)
+{
+   glClearColor(0.0, 0.0, 0.2, 0.0);
+   glShadeModel(GL_SMOOTH);
+   glViewport(0,0,screen_width,screen_height);
+   glMatrixMode(GL_PROJECTION);
+   glLoadIdentity();
+   gluPerspective(45.0f,(GLfloat)screen_width/(GLfloat)screen_height,1.0f,1000.0f);
+   glEnable(GL_DEPTH_TEST);
+   glPolygonMode (GL_FRONT_AND_BACK, GL_FILL);
+}
+
 int				main(int ac, char *av[])
 {
 	GLFWwindow	*window;
